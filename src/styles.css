@@ -1,7 +1,7 @@
 :root {
   font-family: Pretendard, "Noto Sans KR", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-  color: #43372d;
-  background: #efe6d7;
+  color: #3f342b;
+  background: #e9e2d6;
   font-synthesis: none;
 }
 
@@ -15,7 +15,7 @@ button { font: inherit; }
   position: fixed;
   inset: 0;
   pointer-events: none;
-  padding: clamp(14px, 2.2vw, 26px);
+  padding: clamp(14px, 1.8vw, 24px);
   display: flex;
   flex-direction: column;
   justify-content: space-between;
@@ -23,82 +23,86 @@ button { font: inherit; }
 
 .card {
   pointer-events: auto;
-  background: rgba(255, 251, 243, 0.88);
-  border: 1px solid rgba(118, 91, 66, 0.12);
-  box-shadow: 0 12px 32px rgba(88, 65, 44, 0.14);
-  backdrop-filter: blur(14px);
-  -webkit-backdrop-filter: blur(14px);
-  border-radius: 22px;
+  background: linear-gradient(145deg, rgba(255, 252, 246, 0.88), rgba(248, 243, 234, 0.76));
+  border: 1px solid rgba(111, 82, 56, 0.11);
+  box-shadow: 0 16px 38px rgba(77, 57, 39, 0.12), inset 0 1px 0 rgba(255, 255, 255, 0.68);
+  backdrop-filter: blur(18px) saturate(1.05);
+  -webkit-backdrop-filter: blur(18px) saturate(1.05);
+  border-radius: 20px;
 }
 
 .topbar {
-  width: min(420px, calc(100vw - 28px));
-  padding: 16px 18px;
+  width: min(370px, calc(100vw - 28px));
+  padding: 14px 15px 15px;
 }
 
-.brand-row { display: flex; align-items: center; gap: 12px; }
+.brand-row { display: flex; align-items: center; gap: 10px; }
 .paw {
-  width: 42px; height: 42px; display: grid; place-items: center;
-  border-radius: 15px; background: #dcecf3; font-size: 22px;
+  width: 38px; height: 38px; display: grid; place-items: center;
+  border-radius: 13px; background: linear-gradient(145deg, #e0eff4, #cae0e8); font-size: 19px;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.65);
 }
-.title { margin: 0; font-size: 20px; letter-spacing: -0.02em; }
-.subtitle { margin: 3px 0 0; font-size: 12px; color: #806f61; }
+.title { margin: 0; font-size: 18px; line-height: 1.15; letter-spacing: -0.025em; }
+.subtitle { margin: 4px 0 0; font-size: 11px; color: #887769; }
 .status {
-  margin-top: 12px;
-  display: flex; gap: 8px; align-items: center;
-  padding: 9px 11px; border-radius: 14px; background: rgba(221, 237, 244, 0.64);
-  font-size: 13px;
+  margin-top: 10px;
+  display: flex; gap: 7px; align-items: center;
+  padding: 8px 10px; border-radius: 12px; background: rgba(211, 231, 236, 0.62);
+  font-size: 12px; color: #50615f;
 }
-.status-dot { width: 8px; height: 8px; border-radius: 50%; background: #8fb98e; box-shadow: 0 0 0 4px rgba(143,185,142,.16); }
+.status-dot { width: 7px; height: 7px; border-radius: 50%; background: #77aa7d; box-shadow: 0 0 0 4px rgba(119,170,125,.14); }
 
 .controls {
-  display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px;
+  display: flex; flex-wrap: wrap; gap: 7px; margin-top: 10px;
 }
 .ui-btn {
   pointer-events: auto;
   border: 0;
-  border-radius: 14px;
-  padding: 9px 12px;
-  background: #fffaf2;
+  border-radius: 12px;
+  padding: 8px 11px;
+  background: rgba(255, 252, 246, 0.8);
   color: #4b3d32;
-  box-shadow: inset 0 0 0 1px rgba(101, 75, 52, .10), 0 3px 10px rgba(75, 55, 40, .06);
+  box-shadow: inset 0 0 0 1px rgba(92, 66, 44, .10), 0 3px 9px rgba(75, 55, 40, .055);
   cursor: pointer;
-  transition: transform .16s ease, background .16s ease;
+  transition: transform .16s ease, background .16s ease, box-shadow .16s ease;
 }
-.ui-btn:hover { transform: translateY(-1px); background: #fff; }
-.ui-btn.primary { background: #d8eaf3; }
-.ui-btn.warm { background: #f5e7b3; }
-.ui-btn.active { background: #cfe2cf; }
+.ui-btn:hover { transform: translateY(-1px); background: #fffdfa; box-shadow: inset 0 0 0 1px rgba(92,66,44,.12), 0 5px 12px rgba(75,55,40,.08); }
+.ui-btn:active { transform: translateY(0) scale(.98); }
+.ui-btn.primary { background: rgba(204, 229, 239, .9); }
+.ui-btn.warm { background: rgba(244, 224, 161, .9); }
+.ui-btn.active { background: rgba(197, 223, 197, .9); }
 
 .bottom-row { display: flex; align-items: flex-end; justify-content: space-between; gap: 12px; }
-.help-card { padding: 11px 14px; font-size: 12px; color: #78695c; max-width: 340px; }
+.help-card { padding: 10px 13px; font-size: 11px; line-height: 1.45; color: #7d6c5d; max-width: 320px; }
 .context-card {
-  width: min(310px, calc(100vw - 28px));
-  padding: 16px;
-  transform: translateY(10px);
+  width: min(300px, calc(100vw - 28px));
+  padding: 15px;
+  transform: translateY(10px) scale(.98);
   opacity: 0;
   visibility: hidden;
   transition: .2s ease;
 }
-.context-card.visible { transform: translateY(0); opacity: 1; visibility: visible; }
-.context-kicker { font-size: 11px; color: #938273; margin-bottom: 4px; }
-.context-title { margin: 0 0 5px; font-size: 17px; }
+.context-card.visible { transform: translateY(0) scale(1); opacity: 1; visibility: visible; }
+.context-kicker { font-size: 10px; letter-spacing: .04em; color: #9b8979; margin-bottom: 5px; }
+.context-title { margin: 0 0 5px; font-size: 16px; }
 .context-desc { margin: 0 0 12px; font-size: 12px; line-height: 1.55; color: #756659; }
 .context-actions { display: flex; gap: 8px; }
 
 .toast {
   position: fixed; left: 50%; bottom: 28px; transform: translate(-50%, 12px);
-  padding: 10px 14px; border-radius: 999px; background: rgba(67,55,45,.88); color: white;
-  font-size: 12px; opacity: 0; transition: .2s ease; pointer-events: none;
+  padding: 9px 13px; border-radius: 999px; background: rgba(59,49,41,.88); color: white;
+  box-shadow: 0 8px 24px rgba(42,32,24,.18);
+  font-size: 11px; opacity: 0; transition: .2s ease; pointer-events: none;
 }
 .toast.show { opacity: 1; transform: translate(-50%, 0); }
 
 @media (max-width: 720px) {
-  .ui-root { padding: 12px; }
-  .topbar { padding: 13px; border-radius: 18px; }
-  .title { font-size: 18px; }
+  .ui-root { padding: 11px; }
+  .topbar { width: min(348px, calc(100vw - 22px)); padding: 12px; border-radius: 17px; }
+  .paw { width: 34px; height: 34px; }
+  .title { font-size: 17px; }
   .controls { gap: 6px; }
-  .ui-btn { padding: 8px 10px; font-size: 12px; }
+  .ui-btn { padding: 7px 9px; font-size: 11px; }
   .help-card { display: none; }
   .bottom-row { justify-content: flex-end; }
 }
