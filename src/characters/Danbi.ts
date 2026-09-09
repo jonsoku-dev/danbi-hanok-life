@@ -63,7 +63,7 @@ export class Danbi implements Character {
   update(deltaSeconds: number, elapsedSeconds: number): void {
     this.stateTime += deltaSeconds;
     const stateTime = this.stateTime;
-    const { ears, headPivot, body, tail, legs, eyes, mouth, tongue } = this.parts;
+    const { ears, headPivot, body, tail, eyes, mouth, tongue } = this.parts;
 
     tail.rotation.z = Math.sin(elapsedSeconds * 5.2) * 0.22;
     ears[0].rotation.z = -0.15 + Math.sin(elapsedSeconds * 2.1) * 0.035;
