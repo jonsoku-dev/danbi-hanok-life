@@ -1,0 +1,29 @@
+name: Visual review
+on:
+  push:
+    branches: [feat/cozy-hanok-art-direction]
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: visual-review-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  review:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - run: npm install --no-audit --no-fund
+      - name: Prepare isolated review workspace
+        run: tar --exclude=.git -czf /tmp/review-workspace.tar.gz .
+      - uses: actions/upload-artifact@v4
+        with:
+          name: review-workspace
+          path: /tmp/review-workspace.tar.gz
+          retention-days: 1
