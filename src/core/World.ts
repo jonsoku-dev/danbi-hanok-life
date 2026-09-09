@@ -5,35 +5,40 @@ export type WorldUpdater = (deltaSeconds: number, elapsedSeconds: number) => voi
 
 export class World {
   readonly scene = new THREE.Scene();
-  readonly camera = new THREE.PerspectiveCamera(42, 1, 0.1, 100);
+  readonly camera = new THREE.PerspectiveCamera(37, 1, 0.1, 100);
 
   private readonly renderer: THREE.WebGLRenderer;
   private readonly controls: OrbitControls;
   private readonly clock = new THREE.Clock();
   private readonly updaters = new Set<WorldUpdater>();
-  private readonly defaultCameraPosition = new THREE.Vector3(12, 8.8, 14);
-  private readonly defaultTarget = new THREE.Vector3(0.5, 1.1, 0);
+  private readonly defaultCameraPosition = new THREE.Vector3(11.6, 6.65, 13.4);
+  private readonly defaultTarget = new THREE.Vector3(0.65, 1.05, -0.15);
 
   constructor(private readonly canvas: HTMLCanvasElement) {
-    this.scene.background = new THREE.Color('#efe6d7');
-    this.scene.fog = new THREE.Fog('#efe6d7', 18, 32);
+    this.scene.background = this.createBackgroundTexture();
+    this.scene.fog = new THREE.Fog('#e9e1d4', 20, 35);
     this.camera.position.copy(this.defaultCameraPosition);
 
-    this.renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: false });
+    this.renderer = new THREE.WebGLRenderer({
+      canvas,
+      antialias: true,
+      alpha: false,
+      powerPreference: 'high-performance',
+    });
     this.renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
     this.renderer.shadowMap.enabled = true;
     this.renderer.shadowMap.type = THREE.PCFSoftShadowMap;
     this.renderer.outputColorSpace = THREE.SRGBColorSpace;
-    this.renderer.toneMapping = THREE.ACESFilmicToneMapping;
-    this.renderer.toneMappingExposure = 1.05;
+    this.renderer.toneMapping = THREE.AgXToneMapping;
+    this.renderer.toneMappingExposure = 1.12;
 
     this.controls = new OrbitControls(this.camera, canvas);
     this.controls.enableDamping = true;
-    this.controls.dampingFactor = 0.06;
-    this.controls.minDistance = 7;
-    this.controls.maxDistance = 24;
-    this.controls.minPolarAngle = Math.PI * 0.18;
-    this.controls.maxPolarAngle = Math.PI * 0.49;
+    this.controls.dampingFactor = 0.055;
+    this.controls.minDistance = 7.5;
+    this.controls.maxDistance = 23;
+    this.controls.minPolarAngle = Math.PI * 0.19;
+    this.controls.maxPolarAngle = Math.PI * 0.48;
     this.controls.target.copy(this.defaultTarget);
 
     this.addLights();
@@ -61,7 +66,7 @@ export class World {
       const deltaSeconds = Math.min(this.clock.getDelta(), 0.05);
       const elapsedSeconds = this.clock.elapsedTime;
       this.controls.update();
-      this.updaters.forEach((updater) => updater(deltaSeconds, elapsedSeconds));
+      for (const updater of this.updaters) updater(deltaSeconds, elapsedSeconds);
       this.renderer.render(this.scene, this.camera);
     });
   }
@@ -78,25 +83,56 @@ export class World {
   }
 
   private addLights(): void {
-    const hemisphere = new THREE.HemisphereLight('#fff3d8', '#7b6857', 2.35);
+    const hemisphere = new THREE.HemisphereLight('#eaf6ff', '#80684f', 1.55);
     this.scene.add(hemisphere);
 
-    const sun = new THREE.DirectionalLight('#ffdba2', 4.4);
-    sun.position.set(8, 12, 7);
+    const sun = new THREE.DirectionalLight('#ffe2b8', 3.35);
+    sun.position.set(7.5, 11.5, 8.5);
     sun.castShadow = true;
     sun.shadow.mapSize.set(2048, 2048);
-    sun.shadow.camera.left = -12;
-    sun.shadow.camera.right = 12;
-    sun.shadow.camera.top = 12;
-    sun.shadow.camera.bottom = -12;
+    sun.shadow.camera.left = -11;
+    sun.shadow.camera.right = 11;
+    sun.shadow.camera.top = 11;
+    sun.shadow.camera.bottom = -11;
+    sun.shadow.camera.near = 0.5;
+    sun.shadow.camera.far = 30;
     sun.shadow.bias = -0.00015;
+    sun.shadow.normalBias = 0.025;
+    sun.shadow.radius = 2;
     this.scene.add(sun);
 
-    const indoor = new THREE.PointLight('#ffd79d', 16, 9, 2);
-    indoor.position.set(-1.4, 3.2, -0.8);
-    indoor.castShadow = true;
-    indoor.shadow.mapSize.set(1024, 1024);
+    const skyFill = new THREE.DirectionalLight('#c7e3f2', 0.9);
+    skyFill.position.set(-7, 6, -5);
+    this.scene.add(skyFill);
+
+    const indoor = new THREE.PointLight('#ffd69b', 6.5, 8, 2);
+    indoor.position.set(-1.5, 2.8, -1.55);
     this.scene.add(indoor);
+
+    const porchBounce = new THREE.PointLight('#f7c985', 2.2, 7, 2);
+    porchBounce.position.set(3.4, 1.2, 1.1);
+    this.scene.add(porchBounce);
+  }
+
+  private createBackgroundTexture(): THREE.CanvasTexture {
+    const background = document.createElement('canvas');
+    background.width = 32;
+    background.height = 256;
+    const context = background.getContext('2d');
+    if (!context) throw new Error('2D canvas context is unavailable.');
+
+    const gradient = context.createLinearGradient(0, 0, 0, background.height);
+    gradient.addColorStop(0, '#dce9ec');
+    gradient.addColorStop(0.52, '#eee7dc');
+    gradient.addColorStop(1, '#f2e6d3');
+    context.fillStyle = gradient;
+    context.fillRect(0, 0, background.width, background.height);
+
+    const texture = new THREE.CanvasTexture(background);
+    texture.colorSpace = THREE.SRGBColorSpace;
+    texture.minFilter = THREE.LinearFilter;
+    texture.magFilter = THREE.LinearFilter;
+    return texture;
   }
 
   private readonly resize = (): void => {
