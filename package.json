@@ -20,7 +20,7 @@
   },
   "devDependencies": {
     "@biomejs/biome": "2.5.12",
-    "@types/three": "0.186.0",
+    "@types/three": "0.185.4",
     "knip": "6.35.0",
     "oxlint": "1.82.0",
     "typescript": "5.9.2",
