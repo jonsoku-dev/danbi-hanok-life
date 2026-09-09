@@ -1,17 +1,29 @@
 {
   "name": "danbi-hanok-life",
   "private": true,
-  "version": "1.0.0",
+  "version": "1.1.0",
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "vite build",
+    "format": "biome format --write .",
+    "format:check": "biome format .",
+    "lint": "biome lint . && oxlint src vite.config.ts",
+    "lint:fix": "biome check --write . && oxlint src vite.config.ts --fix",
+    "typecheck": "tsc --noEmit",
+    "deadcode": "knip",
+    "build": "npm run typecheck && vite build",
+    "check": "biome lint . && oxlint src vite.config.ts && tsc --noEmit && knip && vite build",
     "preview": "vite preview"
   },
   "dependencies": {
     "three": "0.186.0"
   },
   "devDependencies": {
+    "@biomejs/biome": "2.5.12",
+    "@types/three": "0.185.4",
+    "knip": "6.35.0",
+    "oxlint": "1.82.0",
+    "typescript": "5.9.2",
     "vite": "8.2.2"
   }
 }

@@ -1,16 +1,22 @@
 import * as THREE from 'three';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 
+export type WorldUpdater = (deltaSeconds: number, elapsedSeconds: number) => void;
+
 export class World {
-  constructor(canvas) {
-    this.canvas = canvas;
-    this.scene = new THREE.Scene();
+  readonly scene = new THREE.Scene();
+  readonly camera = new THREE.PerspectiveCamera(42, 1, 0.1, 100);
+
+  private readonly renderer: THREE.WebGLRenderer;
+  private readonly controls: OrbitControls;
+  private readonly clock = new THREE.Clock();
+  private readonly updaters = new Set<WorldUpdater>();
+  private readonly defaultCameraPosition = new THREE.Vector3(12, 8.8, 14);
+  private readonly defaultTarget = new THREE.Vector3(0.5, 1.1, 0);
+
+  constructor(private readonly canvas: HTMLCanvasElement) {
     this.scene.background = new THREE.Color('#efe6d7');
     this.scene.fog = new THREE.Fog('#efe6d7', 18, 32);
-
-    this.camera = new THREE.PerspectiveCamera(42, 1, 0.1, 100);
-    this.defaultCameraPosition = new THREE.Vector3(12, 8.8, 14);
-    this.defaultTarget = new THREE.Vector3(0.5, 1.1, 0);
     this.camera.position.copy(this.defaultCameraPosition);
 
     this.renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: false });
@@ -30,18 +36,50 @@ export class World {
     this.controls.maxPolarAngle = Math.PI * 0.49;
     this.controls.target.copy(this.defaultTarget);
 
-    this.clock = new THREE.Clock();
-    this.mixers = [];
-    this.updaters = [];
-
     this.addLights();
     this.resize();
-    window.addEventListener('resize', () => this.resize());
+    window.addEventListener('resize', this.resize);
   }
 
-  addLights() {
-    const hemi = new THREE.HemisphereLight('#fff3d8', '#7b6857', 2.35);
-    this.scene.add(hemi);
+  add(object: THREE.Object3D): void {
+    this.scene.add(object);
+  }
+
+  addUpdater(updater: WorldUpdater): () => void {
+    this.updaters.add(updater);
+    return () => this.updaters.delete(updater);
+  }
+
+  resetCamera(): void {
+    this.camera.position.copy(this.defaultCameraPosition);
+    this.controls.target.copy(this.defaultTarget);
+    this.controls.update();
+  }
+
+  start(): void {
+    this.renderer.setAnimationLoop(() => {
+      const deltaSeconds = Math.min(this.clock.getDelta(), 0.05);
+      const elapsedSeconds = this.clock.elapsedTime;
+      this.controls.update();
+      this.updaters.forEach((updater) => updater(deltaSeconds, elapsedSeconds));
+      this.renderer.render(this.scene, this.camera);
+    });
+  }
+
+  stop(): void {
+    this.renderer.setAnimationLoop(null);
+  }
+
+  dispose(): void {
+    this.stop();
+    window.removeEventListener('resize', this.resize);
+    this.controls.dispose();
+    this.renderer.dispose();
+  }
+
+  private addLights(): void {
+    const hemisphere = new THREE.HemisphereLight('#fff3d8', '#7b6857', 2.35);
+    this.scene.add(hemisphere);
 
     const sun = new THREE.DirectionalLight('#ffdba2', 4.4);
     sun.position.set(8, 12, 7);
@@ -61,30 +99,11 @@ export class World {
     this.scene.add(indoor);
   }
 
-  add(object) { this.scene.add(object); }
-  addUpdater(fn) { this.updaters.push(fn); }
-
-  resetCamera() {
-    this.camera.position.copy(this.defaultCameraPosition);
-    this.controls.target.copy(this.defaultTarget);
-    this.controls.update();
-  }
-
-  resize() {
+  private readonly resize = (): void => {
     const width = this.canvas.clientWidth || window.innerWidth;
     const height = this.canvas.clientHeight || window.innerHeight;
     this.camera.aspect = width / height;
     this.camera.updateProjectionMatrix();
     this.renderer.setSize(width, height, false);
-  }
-
-  start() {
-    this.renderer.setAnimationLoop(() => {
-      const dt = Math.min(this.clock.getDelta(), 0.05);
-      const t = this.clock.elapsedTime;
-      this.controls.update();
-      this.updaters.forEach((fn) => fn(dt, t));
-      this.renderer.render(this.scene, this.camera);
-    });
-  }
+  };
 }
