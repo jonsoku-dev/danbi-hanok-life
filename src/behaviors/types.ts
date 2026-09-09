@@ -1,6 +1,6 @@
 import type { Vector3 } from 'three';
 
-export type KnownActionId =
+type KnownActionId =
   | 'eat'
   | 'drink'
   | 'play'
@@ -14,7 +14,7 @@ export type KnownActionId =
 
 export type ActionId = KnownActionId | (string & {});
 
-export type KnownDanbiAnimation =
+type KnownDanbiAnimation =
   | 'idle'
   | 'walk'
   | 'run'
@@ -31,7 +31,7 @@ export type KnownDanbiAnimation =
 
 export type DanbiAnimation = KnownDanbiAnimation | (string & {});
 
-export type ActionMovement =
+type ActionMovement =
   | { readonly kind: 'target'; readonly speed?: number }
   | { readonly kind: 'waypoints'; readonly speed?: number; readonly waypoints: readonly Vector3[] }
   | { readonly kind: 'none' };
